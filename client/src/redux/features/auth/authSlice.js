@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import axios from "axios";
+import axios from "../../../utils/axios";
 
 const initialState = {
   user: null,
@@ -50,11 +50,7 @@ export const loginUser = createAsyncThunk(
 
 export const getMe = createAsyncThunk("auth/loginUser", async () => {
   try {
-    const { data } = await axios.post("/auth/me");
-
-    if (data.token) {
-      window.localStorage.setItem("token", data.token);
-    }
+    const { data } = await axios.get("/auth/me");
 
     return data;
   } catch (error) {

@@ -56,7 +56,7 @@ export const NavBar = () => {
       )}
       <div className="flex justify-center items-center bg-gray-600 text-xs text-white rounded-sm px-4 py-2">
         {isAuth ? (
-          <button onAuxClick={logoutHandler}>Выйти</button>
+          <button onClick={logoutHandler}>Выйти</button>
         ) : (
           <Link to={"/login"}>Войти</Link>
         )}

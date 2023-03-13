@@ -5,7 +5,7 @@ import { checkIsAuth, registerUser } from "../redux/features/auth/authSlice";
 import { toast } from "react-toastify";
 
 export const RegisterPage = () => {
-  const [userName, setUserName] = useState("");
+  const [username, setUserName] = useState("");
   const [password, setPassword] = useState("");
 
   const isAuth = useSelector(checkIsAuth);
@@ -24,7 +24,7 @@ export const RegisterPage = () => {
 
   const handleSubmit = () => {
     try {
-      dispatch(registerUser({ userName, password }));
+      dispatch(registerUser({ username, password }));
       setPassword("");
       setUserName("");
     } catch (error) {
@@ -42,7 +42,7 @@ export const RegisterPage = () => {
         Username:
         <input
           type="text"
-          value={userName}
+          value={username}
           onChange={(e) => setUserName(e.target.value)}
           placeholder="Username"
           className="mt-1 text-black w-full rounded-lg bg-gray-400 border py-1 px-2 text-xs outline-none placeholder:text-gray-700"
