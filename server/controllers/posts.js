@@ -1,5 +1,6 @@
 import Post from "../models/Post.js";
 import User from "../models/User.js";
+import Comment from "../models/Comment.js";
 import path, { dirname } from "path";
 import { fileURLToPath } from "url";
 
@@ -66,11 +67,82 @@ export const getAll = async (req, res) => {
 
 export const getById = async (req, res) => {
   try {
-    const post = await Post.findOneAndUpdate(req.params.id, {
+    const post = await Post.findByIdAndUpdate(req.params.id, {
       $inc: { views: 1 },
     });
 
     res.json(post);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getMyPosts = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId);
+    const list = await Promise.all(
+      user.posts.map((post) => {
+        return Post.findById(post._id);
+      })
+    );
+
+    res.json(list);
+  } catch (error) {
+    console.log(error);
+  }
+};
+export const removePosts = async (req, res) => {
+  try {
+    const post = Post.findByIdAndDelete(req.params.id);
+    if (!post) {
+      return res.json({ message: "Такого поста не существует" });
+    }
+
+    await User.findByIdAndUpdate(req.userId, {
+      $pull: { posts: req.params.id },
+    });
+
+    res.json({ message: "Пост был удален" });
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const updatePost = async (req, res) => {
+  try {
+    const { title, text, id } = req.body;
+    const post = await Post.findById(id);
+
+    if (req.files) {
+      let fileName = Date.now().toString() + req.files.image.name;
+
+      const __dirname = dirname(fileURLToPath(import.meta.url));
+      req.files.image.mv(path.join(__dirname, "..", "uploads", fileName));
+
+      post.imgUrl = fileName || "";
+    }
+
+    post.title = title;
+    post.text = text;
+
+    await post.save();
+
+    res.json(post);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getPostComments = async (req, res) => {
+  try {
+    const post = await Post.findById(req.params.id);
+
+    const list = await Promise.all(
+      post.comments.map((comment) => {
+        return Comment.findById(comment);
+      })
+    );
+    res.json(list);
   } catch (error) {
     console.log(error);
   }
